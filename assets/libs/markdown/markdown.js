@@ -54,12 +54,12 @@
       .bash-cmd { color: #4ec9b0; font-weight: 600; }
       .bash-flag { color: #c586c0; }
       .bash-string { color: #ce9178; }
-      .js-keyword { color: #c586c0; font-weight: 600; }
-      .js-method { color: #dcdcaa; }
-      .js-string { color: #ce9178; }
-      .js-number { color: #b5cea8; }
-      .js-comment { color: #6a9955; font-style: italic; }
-      .http-header { color: #4ec9b0; font-weight: 600; }
+      .hl-string { color: #ce9178; }
+      .hl-comment { color: #6a9955; font-style: italic; }
+      .hl-keyword { color: #569cd6; font-weight: bold; }
+      .hl-number { color: #b5cea8; }
+      .hl-function { color: #dcdcaa; }
+      .hl-property { color: #9cdcfe; }
       .md-js-blockquote {
         border-left: 4px solid #7367f0;
         margin: 1em 0;
@@ -209,48 +209,72 @@
     return escaped;
   }
 
-  function highlightJavaScript(code) { 
-    console.log(code);
-    console.log(typeof code);
-
-    let escaped = code.replace(/'((?:\\'|[^'])*)'/g, '"$1"');; 
-
-    // 1. Strings
-    escaped = escaped.replace(/&quot;([^&]*)&quot;/g, '<span class="js-string">"$1"</span>');
-    escaped = escaped.replace(/&#39;([^&]*)&#39;/g, "<span class=\"js-string\">'$1'</span>");
-    escaped = escaped.replace(/`([^`]*)`/g, '<span class="js-string">`$1`</span>');
-
-    // 2. Comentarios
-    escaped = escaped.replace(/(^|[^:])(\/\/.*?$)/gm, '$1<span class="js-comment">$2</span>');
-    escaped = escaped.replace(/\/\*([\s\S]*?)\*\//g, '<span class="js-comment">/*$1*/</span>');
-
-    // 3. Números
-    //escaped = escaped.replace(/\b(\d+)(?![^<]*<\/span>)\b/g, '<span class="js-number">$1</span>');
-
-    // 4. Palabras clave
-    escaped = escaped.replace(/\b(const|let|var|function|return|if|else|for|while|switch|case|break|continue|async|await|try|catch|finally|throw|new|class|extends|import|export|from|default|this)\b/g,
-      '<span class="js-keyword">$1</span>');
-
-    // 5. Métodos
-    escaped = escaped.replace(/\.([a-zA-Z_$][a-zA-Z0-9_$]*)(?![^<]*<\/span>)\b/g, function(m, method) {
-      const methods = [
-        'then','catch','finally','map','filter','reduce','forEach','find','includes',
-        'push','pop','shift','unshift','slice','splice','join','split',
-        'toLowerCase','toUpperCase','trim','replace','match','search',
-        'indexOf','lastIndexOf','charAt','charCodeAt','concat','repeat',
-        'startsWith','endsWith','log','error','warn','info','json','text',
-        'fetch','stringify','parse'
-      ];
-      return methods.includes(method) ? '.<span class="js-method">' + method + '</span>' : m;
+  function highlightJavaScript(code) {
+    // Escapar HTML primero
+    code = code.replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;");
+    
+    // Array para almacenar tokens protegidos
+    const tokens = [];
+    let tokenIndex = 0;
+    
+    function createToken(content) {
+      const placeholder = `###TOKEN${tokenIndex}###`;
+      tokens[tokenIndex] = content;
+      tokenIndex++;
+      return placeholder;
+    }
+    
+    // IMPORTANTE: Proteger strings ANTES que comentarios
+    // porque las URLs dentro de strings contienen //
+    
+    // 1. Proteger template literals (backticks) primero
+    code = code.replace(/`(?:[^`\\]|\\.)*`/g, (match) => {
+      return createToken(`<span class="hl-string">${match}</span>`);
     });
-
-    // 6. Detectar fetch() y resaltar la URL dentro
-    escaped = escaped.replace(/fetch\(\s*['"`](.*?)['"`]/g, function(match, url) {
-      return 'fetch(<span class="js-string">"' + url + '"</span>';
+    
+    // 2. Proteger strings con comillas dobles
+    code = code.replace(/"(?:[^"\\]|\\.)*"/g, (match) => {
+      return createToken(`<span class="hl-string">${match}</span>`);
     });
-
-    return escaped;
-}
+    
+    // 3. Proteger strings con comillas simples
+    code = code.replace(/'(?:[^'\\]|\\.)*'/g, (match) => {
+      return createToken(`<span class="hl-string">${match}</span>`);
+    });
+    
+    // 4. AHORA SÍ proteger comentarios (después de strings)
+    // Comentarios multi-línea
+    code = code.replace(/\/\*[\s\S]*?\*\//g, (match) => {
+      return createToken(`<span class="hl-comment">${match}</span>`);
+    });
+    
+    // Comentarios de línea
+    code = code.replace(/\/\/.*$/gm, (match) => {
+      return createToken(`<span class="hl-comment">${match}</span>`);
+    });
+    
+    // 5. Palabras clave
+    const keywords = /\b(const|let|var|function|return|if|else|for|while|class|new|this|switch|case|break|default|try|catch|throw|async|await|import|export|from|as|of|in)\b/g;
+    code = code.replace(keywords, '<span class="hl-keyword">$1</span>');
+    
+    // 6. Números
+    code = code.replace(/\b\d+\.?\d*\b/g, '<span class="hl-number">$&</span>');
+    
+    // 7. Nombres de funciones (antes de paréntesis)
+    code = code.replace(/\b([a-zA-Z_$][\w$]*)(?=\s*\()/g, '<span class="hl-function">$1</span>');
+    
+    // 8. Propiedades de objetos (después de punto)
+    code = code.replace(/\.([a-zA-Z_$][\w$]*)\b/g, '.<span class="hl-property">$1</span>');
+    
+    // Restaurar todos los tokens
+    for (let i = 0; i < tokenIndex; i++) {
+      code = code.replace(`###TOKEN${i}###`, tokens[i]);
+    }
+    
+    return code;
+  }
 
 
   function highlightHTTP(code) {
