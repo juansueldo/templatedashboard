@@ -418,34 +418,7 @@
                 </div>
             </div>
 
-            <input id="markdown-input" type="hidden" value="# Labels - Gestión de Etiquetas
-
-Los endpoints del módulo **Labels** permiten listar, agregar y eliminar etiquetas (labels) en mensajes, casos y contactos dentro de la plataforma.
-
-Base URL: `https://apit.xtz.mobi/v1/labels/`
-
----
-
-## Autenticación
-
-Todos los métodos requieren un token válido.  
-Se verifican permisos según la acción (`r` para lectura, `w` para escritura).
-
----
-
-## Endpoints
-
-### 1. Listar labels del customer
-
-**Ruta:** `POST /labels/list`  
-**Permiso:** `r`
-
-**Parámetros:**
-
-| Nombre | Tipo | Obligatorio | Descripción |
-|--------|------|-------------|-------------|
-| start  | int  | No          | Indica desde dónde comenzar la búsqueda |
-| limit  | int  | No          | Cantidad de elementos a mostrar |">
+            <input id="markdown-input" type="hidden" value="">
         <div id="outputhtml" class="flex flex-col gap-4 mt-3 p-3 rounded-lg" :style="{ color: colors.text, background: colors.cardBg ,border: '1px solid ' + colors.border, boxShadow: colors.boxShadow + ' 0px 0.25rem 1.25rem' }"></div>
         </main>
     </div>
@@ -476,6 +449,12 @@ Se verifican permisos según la acción (`r` para lectura, `w` para escritura).
             });
         }, 100);
         const textarea = document.getElementById('markdown-input');
+        fetch('/example.md')
+        .then(response => response.text())
+        .then(text => {
+            textarea.value = text;  // Inserta contenido en el input
+        })
+        .catch(err => console.error('Error cargando MD:', err));
         const output = document.getElementById('outputhtml');
         output.innerHTML = markdownToHtml(textarea.value);
     });
