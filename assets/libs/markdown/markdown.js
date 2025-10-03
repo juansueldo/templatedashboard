@@ -368,7 +368,7 @@
       if (m) {
         closeListTo(0);
         var level = m[1].length;
-        out.push('<h' + level + '>' + inlineFormat(m[2].trim()) + '</h' + level + '>');
+        out.push('<h' + level + ' style="font-weight: bolder">' + inlineFormat(m[2].trim()) + '</h' + level + '>');
         i++;
         continue;
       }
