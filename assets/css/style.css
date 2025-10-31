@@ -1,27 +1,112 @@
+/* ==============================================
+   DASHBOARD STYLES - VERSIÓN INTEGRADA
+   Combina estilos originales + responsive
+   ============================================== */
+
+/* ==============================================
+   VARIABLES BASE
+   ============================================== */
+:root {
+    --sidebar-width: 256px;
+    --sidebar-collapsed-width: 5rem;
+    --header-height: 64px;
+    --transition-speed: 0.3s;
+    --settings-panel-width: 400px;
+}
+
+/* ==============================================
+   ESTILOS BASE DEL BODY
+   ============================================== */
+body {
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+/* ==============================================
+   SIDEBAR - ESTILOS ORIGINALES MEJORADOS
+   ============================================== */
 .sidebar {
-    transition: width 0.3s ease;
+    transition: width var(--transition-speed) ease, transform var(--transition-speed) ease;
+    will-change: transform, width;
 }
+
+/* Sidebar colapsada en desktop */
 .sidebar-collapsed .sidebar {
-    width: 5rem;
+    width: var(--sidebar-collapsed-width);
 }
+
 .sidebar-collapsed .sidebar-text {
     opacity: 0;
     width: 0;
     overflow: hidden;
 }
+
 .sidebar-collapsed .main-content {
-    margin-left: 5rem;
+    margin-left: var(--sidebar-collapsed-width);
 }
+
+/* Texto del sidebar */
 .sidebar-text {
-    transition: opacity 0.3s ease, width 0.3s ease;
+    transition: opacity var(--transition-speed) ease, width var(--transition-speed) ease;
     white-space: nowrap;
 }
+
+/* Main content */
 .main-content {
-    transition: margin-left 0.3s ease;
+    transition: margin-left var(--transition-speed) ease;
+    width: 100%;
 }
+
+/* ==============================================
+   SETTINGS PANEL - ESTILOS ORIGINALES MEJORADOS
+   ============================================== */
+.settings-panel {
+    position: fixed;
+    top: 0;
+    right: calc(var(--settings-panel-width) * -1);
+    width: var(--settings-panel-width);
+    max-width: 100%;
+    height: 100vh;
+    background: white;
+    box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+    transition: right var(--transition-speed) ease;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.settings-panel.dark {
+    background: #1a1a1a;
+}
+
+.settings-panel.open {
+    right: 0;
+}
+
+.settings-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-speed) ease;
+    z-index: 999;
+}
+
+.settings-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* ==============================================
+   COLOR PICKER - ESTILOS ORIGINALES
+   ============================================== */
 .color-picker-wrapper {
     position: relative;
 }
+
 .color-picker {
     width: 40px;
     height: 40px;
@@ -29,40 +114,14 @@
     border-radius: 0.5rem;
     cursor: pointer;
 }
-.settings-panel {
-    position: fixed;
-    top: 0;
-    right: -400px;
-    width: 400px;
-    height: 100vh;
-    background: white;
-    box-shadow: -2px 0 10px rgba(0,0,0,0.1);
-    transition: right 0.3s ease;
-    z-index: 1000;
-    overflow-y: auto;
+
+.clr-field {
+    width: 100% !important;
 }
-.settings-panel.dark {
-    background: #1a1a1a;
-}
-.settings-panel.open {
-    right: 0;
-}
-.settings-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-    z-index: 999;
-}
-.settings-overlay.open {
-    opacity: 1;
-    pointer-events: auto;
-}
+
+/* ==============================================
+   DROPDOWN - ESTILOS ORIGINALES MEJORADOS
+   ============================================== */
 .dropdown {
     position: absolute;
     top: 100%;
@@ -75,11 +134,497 @@
     transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
     z-index: 50;
 }
+
 .dropdown.show {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
 }
-.clr-field{
-    width: 100% !important;
+
+/* ==============================================
+   SIDEBAR OVERLAY MÓVIL
+   ============================================== */
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 15;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--transition-speed) ease;
+}
+
+.sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ==============================================
+   RESPONSIVE - TABLET 1024px y menos
+   ============================================== */
+@media (max-width: 1024px) {
+    :root {
+        --sidebar-width: 240px;
+    }
+
+    /* Header ajustes */
+    header {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+
+    /* Grid de cards - 2 columnas */
+    .grid.lg\:grid-cols-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Tablas con scroll horizontal */
+    .overflow-x-auto {
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Reducir padding general */
+    main {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+}
+
+/* ==============================================
+   RESPONSIVE - TABLET PEQUEÑA 768px y menos
+   ============================================== */
+@media (max-width: 768px) {
+    /* Sidebar oculta por defecto en móvil */
+    .sidebar {
+        transform: translateX(-100%) !important;
+    }
+
+    .sidebar.mobile-open {
+        transform: translateX(0) !important;
+    }
+
+    /* Main content ocupa todo el ancho en móvil */
+    .main-content {
+        margin-left: 0 !important;
+    }
+
+    /* Sidebar colapsada no tiene efecto en móvil */
+    .sidebar-collapsed .sidebar {
+        width: var(--sidebar-width) !important;
+        transform: translateX(-100%);
+    }
+
+    .sidebar-collapsed .sidebar.mobile-open {
+        transform: translateX(0);
+    }
+
+    .sidebar-collapsed .main-content {
+        margin-left: 0 !important;
+    }
+
+    /* Mostrar texto del sidebar en móvil siempre */
+    .sidebar-collapsed .sidebar-text {
+        opacity: 1;
+        width: auto;
+        overflow: visible;
+    }
+
+    /* Header ajustes */
+    header {
+        padding-left: 1rem;
+        padding-right: 1rem;
+        flex-wrap: wrap;
+    }
+
+    header .flex-1 {
+        width: 100%;
+        margin-top: 0.75rem;
+    }
+
+    /* Grid de cards - 1 columna */
+    .grid.sm\:grid-cols-2,
+    .grid.lg\:grid-cols-2,
+    .grid.lg\:grid-cols-3 {
+        grid-template-columns: 1fr;
+    }
+
+    /* Título principal más pequeño */
+    h1.text-3xl {
+        font-size: 1.75rem;
+    }
+
+    h2.text-xl {
+        font-size: 1.25rem;
+    }
+
+    /* Cards padding reducido */
+    [class*="rounded-lg p-6"] {
+        padding: 1rem;
+    }
+
+    /* Charts altura reducida */
+    .h-48 {
+        height: 10rem;
+    }
+
+    /* Tablas - textos más pequeños */
+    table thead th {
+        padding-left: 1rem;
+        padding-right: 1rem;
+        font-size: 0.65rem;
+    }
+
+    table tbody td {
+        padding-left: 1rem;
+        padding-right: 1rem;
+        font-size: 0.8rem;
+    }
+
+    /* Settings panel ancho completo en móvil */
+    .settings-panel {
+        width: 100%;
+        max-width: 400px;
+        right: -100%;
+    }
+
+    .settings-panel.open {
+        right: 0;
+    }
+
+    /* Dropdown ajustes */
+    .dropdown {
+        right: 0;
+        left: auto;
+        min-width: 200px;
+    }
+
+    /* Botones más grandes para touch */
+    button {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    /* Main padding reducido */
+    main {
+        padding-left: 1rem;
+        padding-right: 1rem;
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+    }
+}
+
+/* ==============================================
+   RESPONSIVE - MÓVIL 640px y menos
+   ============================================== */
+@media (max-width: 640px) {
+    /* Stats cards - números más pequeños */
+    .text-3xl.font-bold {
+        font-size: 2rem;
+    }
+
+    /* Espaciado reducido */
+    .gap-8 {
+        gap: 1.5rem;
+    }
+
+    .gap-6 {
+        gap: 1rem;
+    }
+
+    .gap-4 {
+        gap: 0.75rem;
+    }
+
+    /* Header más compacto */
+    header {
+        height: auto;
+        min-height: var(--header-height);
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+    }
+
+    /* Profile dropdown más pequeño */
+    .size-10 {
+        width: 2.25rem;
+        height: 2.25rem;
+    }
+
+    /* Tablas - modo card en móvil */
+    table thead {
+        display: none;
+    }
+
+    table tbody tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid;
+        border-radius: 0.5rem;
+        padding: 0.75rem;
+    }
+
+    table tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border: none !important;
+    }
+
+    table tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        opacity: 0.7;
+    }
+
+    /* Chart labels más pequeños */
+    .text-xs {
+        font-size: 0.65rem;
+    }
+
+    /* Settings panel padding reducido */
+    .settings-panel .p-6 {
+        padding: 1.25rem;
+    }
+
+    /* Botones de tema más pequeños */
+    button[style*="width: 90px"] {
+        width: 80px !important;
+        font-size: 0.75rem;
+    }
+}
+
+/* ==============================================
+   RESPONSIVE - MÓVIL PEQUEÑO 480px y menos
+   ============================================== */
+@media (max-width: 480px) {
+    /* Título principal */
+    h1.text-3xl {
+        font-size: 1.5rem;
+    }
+
+    /* Stats cards números */
+    .text-3xl.font-bold {
+        font-size: 1.75rem;
+    }
+
+    /* Cards padding mínimo */
+    [class*="rounded-lg p-6"],
+    .settings-panel .p-6 {
+        padding: 0.875rem;
+    }
+
+    /* Sidebar width reducido */
+    .sidebar {
+        max-width: 85vw;
+    }
+
+    /* Main content padding mínimo */
+    main {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+
+    /* Header items stack */
+    header .flex.items-center.gap-2 {
+        gap: 0.5rem;
+    }
+
+    #menu-button{
+        position: absolute;
+        margin-top: 20px;
+    }
+    /* Iconos más pequeños */
+    .material-symbols-outlined {
+        font-size: 1.25rem;
+    }
+
+    /* Dropdown más estrecho */
+    .dropdown {
+        min-width: 180px;
+        font-size: 0.85rem;
+    }
+
+    /* Settings panel ancho completo */
+    .settings-panel {
+        max-width: 100%;
+    }
+}
+
+/* ==============================================
+   RESPONSIVE - DESKTOP GRANDE 1440px y más
+   ============================================== */
+@media (min-width: 1440px) {
+    main {
+        max-width: 1400px;
+    }
+
+    /* Mejor distribución en pantallas grandes */
+    .grid.lg\:grid-cols-3 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .grid.lg\:grid-cols-2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ==============================================
+   RESPONSIVE - DESKTOP EXTRA GRANDE 1920px y más
+   ============================================== */
+@media (min-width: 1920px) {
+    main {
+        max-width: 1600px;
+    }
+
+    /* 4 columnas en stats cards */
+    .grid.lg\:grid-cols-3 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* ==============================================
+   UTILIDADES RESPONSIVE
+   ============================================== */
+
+/* Textos truncados responsive */
+@media (max-width: 768px) {
+    .truncate-mobile {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+/* Ocultar elementos en móvil */
+.hide-mobile {
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .hide-mobile {
+        display: none;
+    }
+}
+
+/* Mostrar solo en móvil */
+.show-mobile {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .show-mobile {
+        display: block;
+    }
+}
+
+/* ==============================================
+   ANIMACIONES Y TRANSICIONES
+   ============================================== */
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Reducir animaciones para usuarios que lo prefieren */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ==============================================
+   OPTIMIZACIONES DE RENDIMIENTO
+   ============================================== */
+
+/* Hardware acceleration para transiciones */
+.sidebar,
+.settings-panel,
+.dropdown,
+.sidebar-overlay,
+.settings-overlay {
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+/* ==============================================
+   IMPRESIÓN
+   ============================================== */
+@media print {
+    .sidebar,
+    header,
+    .settings-panel,
+    .settings-overlay,
+    .sidebar-overlay,
+    button {
+        display: none !important;
+    }
+
+    .main-content {
+        margin-left: 0 !important;
+    }
+
+    main {
+        padding: 0;
+    }
+
+    * {
+        box-shadow: none !important;
+    }
+
+    .dropdown {
+        display: none !important;
+    }
+}
+
+/* ==============================================
+   ESTADOS DE FOCUS PARA ACCESIBILIDAD
+   ============================================== */
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+/* ==============================================
+   SCROLLBAR PERSONALIZADO (OPCIONAL)
+   ============================================== */
+
+/* Para navegadores Webkit */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
 }
